@@ -11,47 +11,38 @@ const ref = {
 
 const searchObject = {
   searchPhrase: 'mouse',
+  foundTotalPictures: 0,
   foundPictures: 0,
   page: 1,
   per_page: 40,
   key: '24469565-02e5053fcb4f2a37c5c83268e',
+  safesearch: true,
 };
 
 const axios = require('axios').default;
 
-async function getPhoto({ searchPhrase, page, per_page, key }) {
+async function getPhoto({ searchPhrase, page, per_page, key, safesearch }) {
   try {
     const { data } = await axios.get(
-      `https://pixabay.com/api/?key=${key}&q=${searchPhrase}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${per_page}`,
+      `https://pixabay.com/api/?key=${key}&q=${searchPhrase}&image_type=photo&orientation=horizontal&safesearch=${safesearch}&page=${page}&per_page=${per_page}`,
     );
-    console.log(data);
     return data;
   } catch (error) {
     return error;
   }
 }
 
-ref.searchForm.addEventListener('submit', onInputSearch);
+ref.searchForm.addEventListener('submit', onSubmitSearch);
 
-function onInputSearch(e) {
-  //console.log(e.target.value);
+function onSubmitSearch(e) {
   e.preventDefault();
-
-  console.log(e);
-  console.log(e.target);
-  console.log(e.currentTarget);
-
-  searchObject.searchPhrase = e.target.elements.searchQuery.value;
-
-  console.log(searchObject);
+  searchObject.searchPhrase = e.target.elements.searchQuery.value.trim();
 
   if (searchObject.searchPhrase) {
     ref.gallery.innerHTML = '';
-    ref.nextPortion.classList.remove('visually-hidden');
     getPhoto(searchObject).then(picturesDwnloading).catch(onError);
     return;
   }
-
   Notify.info('The search string is not specified.');
 }
 
@@ -61,11 +52,16 @@ function onError(error) {
 
 function picturesDwnloading({ hits, total, totalHits }) {
   searchObject.foundPictures = totalHits;
+  searchObject.foundTotalPictures = total;
   renderPictures(hits);
+  Notify.info(`Found ${total} photo, but we will show you only ${totalHits}`);
   searchObject.page += 1;
   if (searchObject.foundPictures - searchObject.per_page * searchObject.page <= 0) {
     ref.nextPortion.classList.add('visually-hidden');
     Notify.info("We're sorry, but you've reached the end of search results.");
+  } else {
+    ref.nextPortion.textContent = `Load more ${searchObject.per_page}`;
+    ref.nextPortion.classList.remove('visually-hidden');
   }
 }
 

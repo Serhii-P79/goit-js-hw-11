@@ -60,7 +60,7 @@ function picturesDwnloading({ hits, total, totalHits }) {
     ref.nextPortion.classList.add('visually-hidden');
     Notify.info("We're sorry, but you've reached the end of search results.");
   } else {
-    ref.nextPortion.textContent = `Load more ${searchObject.per_page}`;
+    ref.nextPortion.textContent = `Load more ${searchObject.per_page} photo`;
     ref.nextPortion.classList.remove('visually-hidden');
   }
 }

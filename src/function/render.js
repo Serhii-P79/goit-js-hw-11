@@ -1,9 +1,11 @@
 import { ref } from './ref-var';
+import { gallery } from './ref-var';
 
 export function renderPictures(pictures) {
   const arrPictures = pictures
     .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
       return `
+        <a href="${largeImageURL}">
               <div class="photo-card">
                 <img src="${webformatURL}" alt="${tags}" loading="lazy" />
                 <div class="info">
@@ -20,8 +22,10 @@ export function renderPictures(pictures) {
                     <b>Downloads</b>${downloads}
                   </p>
                 </div>
-              </div>`;
+              </div>
+        </a>`;
     })
     .join('');
   ref.gallery.insertAdjacentHTML('beforeend', arrPictures);
+  gallery.refresh();
 }

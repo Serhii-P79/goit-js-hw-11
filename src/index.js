@@ -4,6 +4,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import { ref } from './function/ref-var';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { searchObject } from './function/ref-var';
+
 import { picturesDwnloading } from './function/download';
 import { onError } from './function/error';
 import { getPhoto } from './function/axiosAPI';
@@ -14,7 +15,15 @@ ref.nextPortion.addEventListener('click', onNextPortion);
 
 function onSubmitSearch(e) {
   e.preventDefault();
+  searchObject.defOpt();
   searchObject.searchPhrase = e.target.elements.searchQuery.value.trim();
+  if (searchObject.searchPhrase.endsWith('&&&')) {
+    searchObject.safesearch = false;
+    searchObject.searchPhrase = searchObject.searchPhrase.slice(
+      0,
+      searchObject.searchPhrase.length - 3,
+    );
+  }
 
   if (searchObject.searchPhrase) {
     ref.gallery.innerHTML = '';
